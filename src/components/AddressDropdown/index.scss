@@ -1,0 +1,16 @@
+.suggestion-list {
+  text-decoration: none;
+  list-style: none;
+  border: solid black 1px;
+  border-top: none;
+  position: absolute;
+  bottom: auto;
+  left: 0;
+  z-index: 1;
+  background: white;
+  width: 100%;
+
+  li strong {
+    color: rgb(36, 0, 70);
+  }
+}

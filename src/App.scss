@@ -1,0 +1,40 @@
+* {
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+}
+
+body {
+  font-size: 62.5%;
+  font-family: 'Montserrat';
+}
+
+.heading {
+  color: #3C096C;
+}
+
+.button {
+  background-color: #7B2CBF;
+  color: white;
+  padding: 1rem;
+  box-shadow: none;
+  border: none;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 1s;
+  outline: none;
+}
+
+.button:hover {
+  background-color: #C77DFF;
+}
+
+a {
+  text-decoration: none;
+  color: white;
+}
+
+button {
+  outline: none;
+}

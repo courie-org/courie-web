@@ -1,0 +1,59 @@
+.homepage-container {
+  display: flex;
+  flex-direction: column;
+
+  .homepage-hero {
+    height: 95vh;
+    background-image: linear-gradient(to right bottom, rgba(123, 44, 191, 0.5), rgba(224, 170, 255, 0.5)), url('./hero-office.jpg');
+    background-size: cover;
+    background-position: top;
+
+    .delivery-form-container {
+      width: 30%;
+      height: 35%;
+      background-color: white;
+      border-radius: 0.5rem;
+      border: 2px solid rgb(36, 0, 70);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      @media only screen and (max-width: 1250px) {
+        width: 50%;
+      }
+
+
+      .delivery-form-heading {
+        font-size: 2rem;
+        color: #3C096C;
+      }
+
+      .delivery-form-body {
+        align-self: flex-start;
+        padding: 15px 15px;
+        font-size: 1rem;
+        width: 100%;
+
+        .delivery-form-input {
+          display: block;
+          padding: 10px 0;
+          position: relative;
+
+          label {
+            display: block;
+          }
+          input {
+            display: block;
+            height: 2rem;
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
+}
