@@ -30,6 +30,7 @@ spec:
     REGISTRY_CREDS = credentials('registry-creds')
     IMAGE = "quay.io/jamjones/courie-web"
     NAMESPACE = "courie"
+    VERSION = "1.0.0-test"
   }
 
   stages {
@@ -37,9 +38,12 @@ spec:
       steps {
 
         script {
-          env.IMAGE_TAG = env.GIT_BRANCH.replaceAll("/", "-")
-          echo 'Branch tag - ' + env.IMAGE_TAG
-          sh 'echo $env.IMAGE_TAG'
+          def imageTag = env.GIT_BRANCH.replaceAll("/", "-")
+          if ("master".equals(imageTag)) {
+            sh "podman --storage-driver=vfs build -t ${env.IMAGE}:${env.VERSION} ."
+          } else {
+            sh "podman --storage-driver=vfs build -t ${env.IMAGE}:${imageTag} ."
+          }
         }
 
         sh 'echo $env.IMAGE_TAG'
