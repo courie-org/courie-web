@@ -1,9 +1,29 @@
 pipeline {
   agent {
-
-    // Use the agent with podman and maven
-    label "node-builder"
+        kubernetes {
+            cloud 'openshift'
+            defaultContainer 'jnlp'
+            label 'node-builder'
+            serviceAccount 'jenkins'
+      yaml """
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: jnlp
+    image: image-registry.openshift-image-registry.svc:5000/courie-pipeline/jenkins-nodejs-agent:latest
+    imagePullPolicy: Always
+    resources:
+        limits:
+          cpu: 2
+          memory: 2Gi
+        requests:
+          cpu: 1
+          memory: 1Gi
+"""
+    }
   }
+
   environment {
 
     // Define a credential for pushing to the image registry.
