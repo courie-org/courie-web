@@ -37,12 +37,14 @@ spec:
       steps {
 
         script {
-          def branchTag = env.GIT_BRANCH.replaceAll("/", "-")
-          echo 'Branch tag - ' + branchTag
+          env.IMAGE_TAG = env.GIT_BRANCH.replaceAll("/", "-")
+          echo 'Branch tag - ' + env.IMAGE_TAG
+          podman --version
         }
 
-        sh 'echo $branchTag'
-        sh 'echo branchTag'
+        sh 'echo $env.IMAGE_TAG'
+        sh 'echo $IMAGE_TAG'
+        sh 'podman --version'
         //sh 'podman --storage-driver=vfs build -t $IMAGE:$BUILD_NUMBER .'
       }
     }
