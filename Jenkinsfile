@@ -39,7 +39,7 @@ spec:
         script {
           env.IMAGE_TAG = env.GIT_BRANCH.replaceAll("/", "-")
           echo 'Branch tag - ' + env.IMAGE_TAG
-          sh 'echo ${env.IMAGE_TAG}'
+          sh 'echo $env.IMAGE_TAG'
         }
 
         sh 'echo $env.IMAGE_TAG'
