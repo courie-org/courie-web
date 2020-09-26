@@ -1,0 +1,85 @@
+---
+apiVersion: template.openshift.io/v1
+kind: Template
+labels:
+  template: courie-web-dark-release-template
+metadata:
+  name: courie-web-dark-release-template
+objects:
+- apiVersion: networking.istio.io/v1alpha3
+  kind: VirtualService
+  metadata:
+    name: courie-web-routing-config-${BRANCH}
+  spec:
+    hosts:
+    - "courie-web.${CLUSTER_APPS_BASE_URL}"
+    gateways:
+    - courie-web-gateway
+    http:
+    - match:
+      - headers:
+          X-Branch:
+            exact: "${BRANCH}"
+      route:
+      - destination:
+          host: courie-web
+          subset: "${BRANCH}"
+
+- kind: Deployment
+  apiVersion: apps/v1
+  metadata:
+    name: courie-web-${BRANCH}
+    labels:
+      app: courie-web
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: courie-web
+    template:
+      metadata:
+        labels:
+          app: courie-web
+          version: ${BRANCH}
+        annotations:
+          sidecar.istio.io/inject: 'true'
+      spec:
+        containers:
+          - name: courie-web
+            image: quay.io/jamjones/courie-web:${BRANCH}
+            ports:
+              - containerPort: 8080
+                protocol: TCP
+            envFrom:
+              - secretRef:
+                  name: courie-web-directions-api-key
+              - configMapRef:
+                  name: courie-web
+            imagePullPolicy: Always
+        restartPolicy: Always
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 25%
+        maxSurge: 25%
+
+- apiVersion: networking.istio.io/v1alpha3
+  kind: DestinationRule
+  metadata:
+    name: courie-web-dr-${BRANCH}
+  spec:
+    host: courie-web
+    subsets:
+    - name: "${BRANCH}"
+      labels:
+        version: "${BRANCH}"
+
+parameters:
+- description: The base app URL of your OpenShift Cluster. For example, apps.cluster.example.com
+  displayName: App Cluster URL
+  name: CLUSTER_APPS_BASE_URL
+  required: true
+- description: The branch name of the workload to deploy. This must be a URL-friendly name. 
+  displayName: Branch Name
+  name: BRANCH
+  required: true

@@ -31,6 +31,7 @@ spec:
     IMAGE = "quay.io/jamjones/courie-web"
     NAMESPACE = "courie"
     VERSION = "1.0.0-test"
+    CLUSTER_APPS_BASE_URL = "<REPLACE ME>"
   }
 
   stages {
@@ -38,27 +39,50 @@ spec:
       steps {
 
         script {
-          def imageTag = env.GIT_BRANCH.replaceAll("/", "-")
-          if ("master".equals(imageTag)) {
-            sh "podman --storage-driver=vfs build -t ${env.IMAGE}:${env.VERSION} ."
-          } else {
-            sh "podman --storage-driver=vfs build -t ${env.IMAGE}:${imageTag} ."
-          }
-        }
+          def friendlyBranchName = env.GIT_BRANCH.replaceAll("/", "-")
+          def imgNameAndTag = env.IMAGE + ":" + ${env.VERSION}
+          if (!"master".equals(friendlyBranchName)) {
+            imgNameAndTag = env.IMAGE + ":" + friendlyBranchName
+          } 
 
-        sh 'echo $env.IMAGE_TAG'
-        sh 'echo $IMAGE_TAG'
-        sh 'podman --version'
-        //sh 'podman --storage-driver=vfs build -t $IMAGE:$BUILD_NUMBER .'
+          sh "podman --storage-driver=vfs build -t ${imgNameAndTag} ."
+          sh 'podman login -u $REGISTRY_CREDS_USR -p $REGISTRY_CREDS_PSW quay.io'
+          sh "podman push ${imgNameAndTag}"
+        }
       }
     }
 
-    stage("Deploying Image") {
+    stage("Dark Release") {
+      when {
+        expression {
+          BRANCH_NAME != 'master'
+        }
+      }
       steps {
         script {
           openshift.withCluster() {
             openshift.withProject("courie") {
               echo "Using project ${openshift.project()}"
+
+              // Create a new VirtualService and DestinationRule for the branch
+              openshift.apply(openshift.process(readFile(".openshift/new-dark-workload.yaml"), "-p", "BRANCH=${friendlyBranchName}", "-p", "CLUSTER_APPS_BASE_URL=${env.CLUSTER_APPS_BASE_URL}"))
+
+            }
+          }
+        }
+      }
+    }
+    stage("Official Release") {
+      when {
+        expression {
+          BRANCH_NAME == 'master'
+        }
+      }
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.withProject("courie") {
+
             }
           }
         }
