@@ -1,0 +1,50 @@
+metadata:
+  name: courie-web
+apiVersion: 1.0.0
+
+projects:
+  - source:
+      type: git
+      location: 'https://github.com/courie-org/courie-web'
+      branch: master
+    name: courie-web
+
+
+components:
+  - alias: courie-web
+    mountSources: true
+    image: 'quay.io/eclipse/che-nodejs8-centos:7.2.0'
+    memoryLimit: 768Mi
+    type: dockerimage
+    endpoints:
+      - name: '3000-tcp'
+        port: 3000
+    env:
+      - name: FRONTEND_PORT
+        value: '3000'
+
+  - id: redhat/vscode-openshift-connector/latest
+    type: chePlugin
+    alias: vscode-openshift
+
+commands:
+  - name: install courie-web
+    actions:
+      - type: exec
+        command: npm install
+        component: courie-web
+        workdir: /projects/courie-web/
+        
+  - name: start courie-web
+    actions:
+      - type: exec
+        command: npm start
+        component: courie-web
+        workdir: /projects/courie-web/
+
+  - name: build courie-web PROD
+    actions:
+      - type: exec
+        command: npm run build
+        component: courie-web
+        workdir: /projects/courie-web/
