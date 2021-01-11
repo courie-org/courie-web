@@ -1,0 +1,13 @@
+version: 1.0.0
+versionName: v1
+dockerTag: latest
+
+# This is in the form apps.somecluster.example.com. 
+baseOpenshiftAppHostname: apps.cluster-e15f.e15f.sandbox1409.opentlc.com
+
+# The first install will create additional resources
+firstInstall: false
+
+# This must be the Google Maps API key with Directions, Geocoding, Maps JS, and Places APIs enabled.
+directionsApiKey: "<<CHANGEME>>"
+

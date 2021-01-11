@@ -1,4 +1,26 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Helm Install
+
+### Set env variables
+```
+export API_KEY=<<INSERT_GOOGLE_MAPS_API_KEY>>
+export CLUSTER_APP_BASE=apps.cluster.example.com
+```
+
+### First-time Install
+```
+helm install courie-web-v1 --set firstInstall=true --set directionsApiKey=$API_KEY --set baseOpenshiftAppHostname=$CLUSTER_APP_BASE .openshift/helm
+```
+
+### Deploying a New Version
+To deploy another version of an app, you must set version, versionName, and dockerTag. This will create a new workload for the app in which you can control with VirtualServices and DestinationRules. 
+
+The following example deploys version 2 of the customer web application.
+
+```
+helm install courie-web-v2 --set version=2.0.0 --set versionName=v2 --set dockerTag=2.0.0 .openshift/helm
+```
+
+> __Note:__ Helm versioning was an issue as Service Mesh needed to only create a new deployment; All other resources should be the same! 
 
 ## Available Scripts
 

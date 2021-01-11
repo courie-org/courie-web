@@ -1,0 +1,14 @@
+{{- if .Values.firstInstall -}}
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  # ConfigMap is referenced by the deployment and is expected to be courie-web.
+  name: courie-web
+  labels:
+    app: courie-web
+data:
+  # These values are known from the cluster-setup resources.
+  REACT_APP_DELIVERIES_HOST: delivery-api.{{ .Values.baseOpenshiftAppHostname }}
+  REACT_APP_DRIVERS_HOST: driver-api.{{ .Values.baseOpenshiftAppHostname }}
+  PORT: "8080"
+{{- end }}

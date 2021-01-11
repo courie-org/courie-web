@@ -1,0 +1,37 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: courie-web-{{ .Values.versionName }}
+  labels:
+    app: courie-web
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: courie-web
+  template:
+    metadata:
+      labels:
+        app: courie-web
+        version: {{ .Values.version }}
+      annotations:
+        sidecar.istio.io/inject: 'true'
+    spec:
+      containers:
+        - name: courie-web
+          image: quay.io/jamjones/courie-web:{{ default "latest" .Values.dockerTag }}
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          envFrom:
+            - secretRef:
+                name: courie-web-directions-api-key
+            - configMapRef:
+                name: courie-web
+          imagePullPolicy: Always
+      restartPolicy: Always
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%

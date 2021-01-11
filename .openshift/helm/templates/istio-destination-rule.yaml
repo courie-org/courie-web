@@ -1,0 +1,12 @@
+{{- if .Values.firstInstall -}}
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: courie-web-dr
+spec:
+  host: courie-web
+  subsets:
+  - name: {{ .Values.versionName }}
+    labels:
+      version: {{ .Values.version }}
+{{- end }}
